@@ -121,6 +121,23 @@ app.post('/api/analyze-files', upload.array('files'), (req, res) => {
       'Substituted standard Ordinary Portland Cement with a 40% ground granulated blast-furnace slag (GGBS) mix, cutting embodied carbon by 14.8 tonnes.',
       'Normalized window opening spans to off-the-shelf prefabricated modular headers, reducing on-site framing labor by an estimated 32 man-hours.',
       'Optimized subfloor thermal envelope with vapor-permeable aerogel membranes, lowering operational HVAC load by 1.4 kW.'
+    ],
+    sketchModifications: [
+      {
+        region: 'Central Core (Nodes N-2 to N-5)',
+        change: 'Replaced rigid shear wall with cross-braced steel frame.',
+        reason: 'The original sketch indicated a heavy masonry core. Switching to a braced steel frame reduces the dead load by 4,200 kg while maintaining seismic Zone 2B compliance. This also frees up 2.4 square meters of usable floor space.'
+      },
+      {
+        region: 'Perimeter Envelope (Grid A1 - A6)',
+        change: 'Optimized window header spans to match standard pre-fab dimensions.',
+        reason: 'The uploaded design featured irregular window spans. Standardizing these to 2.4m modules eliminates custom cutting on-site, saving 12% in labor costs and accelerating the envelope sealing phase.'
+      },
+      {
+        region: 'Foundation Footings (Nodes N-0, N-8)',
+        change: 'Upgraded pad footings to a unified strip foundation in the southern sector.',
+        reason: 'Analysis of the load paths revealed high point-stress at the southern columns. Distributing this via a strip foundation prevents differential settlement without requiring expensive deep piles.'
+      }
     ]
   };
 
@@ -251,6 +268,23 @@ app.get('/api/project/:id', (req, res) => {
             'Substituted standard Ordinary Portland Cement with a 40% ground granulated blast-furnace slag (GGBS) mix, cutting embodied carbon by 14.8 tonnes.',
             'Normalized window opening spans to off-the-shelf prefabricated modular headers, reducing on-site framing labor by an estimated 32 man-hours.',
             'Optimized subfloor thermal envelope with vapor-permeable aerogel membranes, lowering operational HVAC load by 1.4 kW.'
+          ],
+          sketchModifications: [
+            {
+              region: 'Central Core (Nodes N-2 to N-5)',
+              change: 'Replaced rigid shear wall with cross-braced steel frame.',
+              reason: 'The original sketch indicated a heavy masonry core. Switching to a braced steel frame reduces the dead load by 4,200 kg while maintaining seismic Zone 2B compliance. This also frees up 2.4 square meters of usable floor space.'
+            },
+            {
+              region: 'Perimeter Envelope (Grid A1 - A6)',
+              change: 'Optimized window header spans to match standard pre-fab dimensions.',
+              reason: 'The uploaded design featured irregular window spans. Standardizing these to 2.4m modules eliminates custom cutting on-site, saving 12% in labor costs and accelerating the envelope sealing phase.'
+            },
+            {
+              region: 'Foundation Footings (Nodes N-0, N-8)',
+              change: 'Upgraded pad footings to a unified strip foundation in the southern sector.',
+              reason: 'Analysis of the load paths revealed high point-stress at the southern columns. Distributing this via a strip foundation prevents differential settlement without requiring expensive deep piles.'
+            }
           ]
         }
       });
