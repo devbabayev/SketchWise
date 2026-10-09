@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { UploadCloud, File, X } from 'lucide-react';
+import { UploadCloud, File as FileIcon, X, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function FileUploader({ onFilesSelected }) {
@@ -50,8 +50,24 @@ export default function FileUploader({ onFilesSelected }) {
     onFilesSelected(updatedFiles);
   };
 
+  const loadSampleBlueprint = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      const sampleFile = new window.File(
+        ['sample architectural blueprint content'], 
+        'Small_Cabin_Floor_Plan_Sample.jpg', 
+        { type: 'image/jpeg' }
+      );
+      handleFiles([sampleFile]);
+    } catch (err) {
+      console.error('Failed to create sample File:', err);
+    }
+  };
+
   return (
-    <div className="w-full">
+    <div className="w-full space-y-3">
+      {/* Interactive Drop Area */}
       <motion.div
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
@@ -70,42 +86,44 @@ export default function FileUploader({ onFilesSelected }) {
           multiple 
           accept="image/*,application/pdf"
           onChange={handleFileInput}
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
         />
         
         {/* Animated Background Glow */}
         <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/0 via-purple-500/0 to-indigo-500/0 group-hover:from-indigo-500/10 group-hover:via-purple-500/5 group-hover:to-indigo-500/10 transition-colors duration-500 z-0" />
 
-        <div className="relative z-10 flex flex-col items-center">
+        <div className="relative z-1 flex flex-col items-center pointer-events-none">
           <div className="bg-indigo-500/20 p-4 rounded-full mb-4 group-hover:bg-indigo-500/30 transition-colors">
             <UploadCloud className="w-8 h-8 text-indigo-400 group-hover:text-indigo-300 transition-colors" />
           </div>
           <h3 className="text-lg font-medium text-white mb-2">Drag & Drop project files</h3>
-          <p className="text-sm text-gray-400 max-w-sm mb-3">
+          <p className="text-sm text-gray-400 max-w-sm">
             Upload sketches, blueprints, or PDF requirements. Our AI will analyze them to configure your project parameters.
           </p>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              const sampleFile = new File(['mock content'], 'sample_cabin_floorplan.jpg', { type: 'image/jpeg' });
-              handleFiles([sampleFile]);
-            }}
-            className="z-30 text-xs text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 px-3 py-1.5 rounded-full transition-all"
-          >
-            ⚡ Or click to load demo blueprint
-          </button>
         </div>
       </motion.div>
 
+      {/* Quick Action: Instant Demo Loader */}
+      <div className="flex items-center justify-between px-2 text-xs text-gray-400">
+        <span>Supported: PNG, JPG, PDF</span>
+        <button
+          type="button"
+          onClick={loadSampleBlueprint}
+          className="text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer font-medium"
+        >
+          <Sparkles className="w-3.5 h-3.5" />
+          Use Demo Blueprint
+        </button>
+      </div>
+
+      {/* File List */}
       <AnimatePresence>
         {files.length > 0 && (
           <motion.div 
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="mt-4 space-y-2"
+            className="space-y-2 pt-1"
           >
             {files.map((file, i) => (
               <motion.div 
@@ -118,16 +136,17 @@ export default function FileUploader({ onFilesSelected }) {
               >
                 <div className="flex items-center gap-3 overflow-hidden">
                   <div className="p-2 bg-indigo-500/10 rounded-md group-hover:bg-indigo-500/20 transition-colors">
-                    <File className="w-4 h-4 text-indigo-400 shrink-0" />
+                    <FileIcon className="w-4 h-4 text-indigo-400 shrink-0" />
                   </div>
                   <span className="text-sm font-medium text-gray-300 truncate">{file.name}</span>
                 </div>
                 <button 
+                  type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     removeFile(i);
                   }}
-                  className="p-1.5 bg-red-500/0 hover:bg-red-500/20 rounded-full transition-colors text-gray-500 hover:text-red-400"
+                  className="p-1.5 bg-red-500/0 hover:bg-red-500/20 rounded-full transition-colors text-gray-500 hover:text-red-400 cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>

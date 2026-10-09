@@ -90,11 +90,37 @@ app.post('/api/analyze-files', upload.array('files'), (req, res) => {
     original,
     optimized,
     savings: original - optimized,
+    blueprintUrl: '/example_blueprint.jpg',
+    blueprintName: 'Optimized_Small_Cabin_Floor_Plan_v2.dxf',
+    complianceScore: 98.6,
+    carbonReductionTons: 14.8,
+    timelineDays: 58,
     materials: {
       concrete: Math.round(area * 0.15),
       steel: Math.round((area * 2) + (height * 10)),
+      timber: Math.round(area * 0.8),
+      glazing: 48,
     },
-    variables: { area, height }
+    variables: {
+      area: `${area} m²`,
+      height: `${height} m`,
+      structuralSpan: '6.4 m',
+      designLiveLoad: '2.5 kN/m²',
+      windExposureCategory: 'Class B (120 km/h)',
+      seismicZoneRating: 'Zone 2B (Moderate)',
+    },
+    billOfMaterials: [
+      { name: 'Self-Consolidating C35/45 Eco-Concrete', category: 'Foundation', qty: `${Math.round(area * 0.15)} m³`, unitPrice: '$140/m³', total: `$${Math.round(area * 0.15) * 140}`, savings: '-12% via GGBS blend' },
+      { name: 'S355 Structural High-Yield Rebar & I-Beams', category: 'Framing', qty: `${Math.round((area * 2) + (height * 10))} kg`, unitPrice: '$3.50/kg', total: `$${Math.round(((area * 2) + (height * 10)) * 3.5)}`, savings: '-18% via section optimization' },
+      { name: 'Cross-Laminated Timber (CLT) Roof Panels', category: 'Superstructure', qty: `${Math.round(area * 0.8)} m²`, unitPrice: '$65/m²', total: `$${Math.round(area * 0.8 * 65)}`, savings: '-15% FSC regional sourcing' },
+      { name: 'Argon-Filled Low-E Thermal Glazing Units', category: 'Envelope', qty: '48 m²', unitPrice: '$75/m²', total: '$3,600', savings: '-10% modular dimension standard' },
+    ],
+    engineeringInsights: [
+      'Redistributed axial column loads by introducing a 200mm secondary cantilever, eliminating one central pillar.',
+      'Substituted standard Ordinary Portland Cement with a 40% ground granulated blast-furnace slag (GGBS) mix, cutting embodied carbon by 14.8 tonnes.',
+      'Normalized window opening spans to off-the-shelf prefabricated modular headers, reducing on-site framing labor by an estimated 32 man-hours.',
+      'Optimized subfloor thermal envelope with vapor-permeable aerogel membranes, lowering operational HVAC load by 1.4 kW.'
+    ]
   };
 
   const projectId = uuidv4();
@@ -133,14 +159,37 @@ app.post('/api/purchase', (req, res) => {
       original: 19200,
       optimized: 16830,
       savings: 2370,
+      blueprintUrl: '/example_blueprint.jpg',
+      blueprintName: 'Optimized_Small_Cabin_Floor_Plan_v2.dxf',
+      complianceScore: 98.6,
+      carbonReductionTons: 14.8,
+      timelineDays: 58,
       materials: {
         concrete: 23,
-        steel: 330
+        steel: 330,
+        timber: 120,
+        glazing: 48,
       },
       variables: {
-        area: 150,
-        height: 3
-      }
+        area: '150 m²',
+        height: '3 m',
+        structuralSpan: '6.4 m',
+        designLiveLoad: '2.5 kN/m²',
+        windExposureCategory: 'Class B (120 km/h)',
+        seismicZoneRating: 'Zone 2B (Moderate)',
+      },
+      billOfMaterials: [
+        { name: 'Self-Consolidating C35/45 Eco-Concrete', category: 'Foundation', qty: '23 m³', unitPrice: '$140/m³', total: '$3,220', savings: '-12% via GGBS blend' },
+        { name: 'S355 Structural High-Yield Rebar & I-Beams', category: 'Framing', qty: '330 kg', unitPrice: '$3.50/kg', total: '$1,155', savings: '-18% via section optimization' },
+        { name: 'Cross-Laminated Timber (CLT) Roof Panels', category: 'Superstructure', qty: '120 m²', unitPrice: '$65/m²', total: '$7,800', savings: '-15% FSC regional sourcing' },
+        { name: 'Argon-Filled Low-E Thermal Glazing Units', category: 'Envelope', qty: '48 m²', unitPrice: '$75/m²', total: '$3,600', savings: '-10% modular dimension standard' },
+      ],
+      engineeringInsights: [
+        'Redistributed axial column loads by introducing a 200mm secondary cantilever, eliminating one central pillar.',
+        'Substituted standard Ordinary Portland Cement with a 40% ground granulated blast-furnace slag (GGBS) mix, cutting embodied carbon by 14.8 tonnes.',
+        'Normalized window opening spans to off-the-shelf prefabricated modular headers, reducing on-site framing labor by an estimated 32 man-hours.',
+        'Optimized subfloor thermal envelope with vapor-permeable aerogel membranes, lowering operational HVAC load by 1.4 kW.'
+      ]
     };
   }
   const userId = generate12DigitId();
