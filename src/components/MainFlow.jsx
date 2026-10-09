@@ -4,6 +4,7 @@ import { OrbitControls, Box, Cylinder, MeshDistortMaterial } from '@react-three/
 import { ArrowRight, Calculator, Check, DollarSign, Lock, Sparkles, TrendingDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import FileUploader from './FileUploader.jsx';
+import MagneticButton from './MagneticButton.jsx';
 
 // --- 3D Components ---
 const AbstractShape = () => {
@@ -121,14 +122,14 @@ export default function MainFlow() {
               </div>
               <FileUploader onFilesSelected={setFiles} />
               
-              <button 
+              <MagneticButton 
                 onClick={handleAnalyze}
                 disabled={files.length === 0 || isAnalyzing}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-medium py-4 rounded-xl flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                variant="primary"
               >
                 {isAnalyzing ? 'Analyzing with AI...' : 'Calculate Optimal Costs'}
                 <Sparkles className="w-5 h-5" />
-              </button>
+              </MagneticButton>
             </motion.div>
           )}
 
@@ -150,35 +151,44 @@ export default function MainFlow() {
                 </div>
               </div>
               
-              <div className="bg-[#1a1a1a] rounded-2xl p-6 border border-white/10 space-y-4 relative overflow-hidden">
-                <div className="flex items-center gap-2 mb-4">
-                  <Lock className="w-5 h-5 text-gray-400" />
-                  <h3 className="font-semibold text-lg">Secure Paywall</h3>
-                </div>
-                <p className="text-gray-400 text-sm mb-4">
-                  The detailed cost breakdown, exact material quantities, and architectural optimizations are hidden. Purchase to unlock the full blueprint.
-                </p>
-                <input
-                  type="email"
-                  placeholder="Your Email"
-                  value={purchaseEmail}
-                  onChange={e => setPurchaseEmail(e.target.value)}
-                  className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 transition-colors"
-                />
-                <input
-                  type="password"
-                  placeholder="Create Password"
-                  value={purchasePassword}
-                  onChange={e => setPurchasePassword(e.target.value)}
-                  className="w-full bg-black/50 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-indigo-500 transition-colors"
-                />
-                <button
+              <div className="bg-gradient-to-b from-[#161616] to-[#0a0a0a] rounded-2xl p-8 border border-white/5 space-y-5 relative overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.5)] group">
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-500/10 via-transparent to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-700" />
+                
+                <div className="relative z-10">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2.5 bg-white/5 rounded-xl border border-white/10">
+                      <Lock className="w-5 h-5 text-gray-300" />
+                    </div>
+                    <h3 className="font-semibold text-xl tracking-tight">Secure Paywall</h3>
+                  </div>
+                  <p className="text-gray-400 text-sm mb-6 leading-relaxed">
+                    The detailed cost breakdown, exact material quantities, and architectural optimizations are hidden. Purchase to unlock the full blueprint.
+                  </p>
+                  
+                  <div className="space-y-3 mb-6">
+                    <input
+                      type="email"
+                      placeholder="Your Email"
+                      value={purchaseEmail}
+                      onChange={e => setPurchaseEmail(e.target.value)}
+                      className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3.5 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-sm placeholder:text-gray-600"
+                    />
+                    <input
+                      type="password"
+                      placeholder="Create Password"
+                      value={purchasePassword}
+                      onChange={e => setPurchasePassword(e.target.value)}
+                      className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3.5 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-sm placeholder:text-gray-600"
+                    />
+                  </div>
+                <MagneticButton
                   onClick={handlePurchase}
-                  className="w-full bg-white hover:bg-gray-200 text-black font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                  variant="secondary"
                 >
                   <DollarSign className="w-5 h-5" />
                   Unlock Full Report
-                </button>
+                </MagneticButton>
+                </div>
               </div>
             </motion.div>
           )}

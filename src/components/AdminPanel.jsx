@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Lock, Check } from 'lucide-react';
+import MagneticButton from './MagneticButton.jsx';
 
 export default function AdminPanel() {
   const [tokenStatus, setTokenStatus] = useState(false);
@@ -71,10 +72,10 @@ export default function AdminPanel() {
             />
           </div>
           
-          <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
+          <MagneticButton variant="primary" className="mt-4">
             <Check className="w-5 h-5" />
             Save Configuration
-          </button>
+          </MagneticButton>
 
           {message && (
             <p className="text-center text-sm mt-4 text-gray-300">{message}</p>
