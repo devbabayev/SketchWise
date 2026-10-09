@@ -18,11 +18,11 @@ export default function MagneticButton({ children, onClick, disabled, className,
     setPosition({ x: 0, y: 0 });
   };
 
-  const baseStyles = "relative w-full overflow-hidden rounded-xl py-4 flex items-center justify-center gap-2 font-semibold text-sm tracking-wide uppercase transition-colors outline-none group";
+  const baseStyles = "relative w-full min-h-[52px] px-6 py-3.5 overflow-hidden rounded-xl flex items-center justify-center gap-2.5 font-semibold text-sm tracking-wider uppercase transition-all outline-none cursor-pointer group";
   
   const variants = {
-    primary: "bg-indigo-600 text-white shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_30px_rgba(79,70,229,0.5)] border border-indigo-500/50",
-    secondary: "bg-white text-black shadow-md hover:bg-gray-100",
+    primary: "bg-indigo-600 text-white shadow-[0_0_24px_rgba(79,70,229,0.35)] hover:shadow-[0_0_36px_rgba(79,70,229,0.55)] border border-indigo-400/30",
+    secondary: "bg-white text-black shadow-lg hover:bg-gray-100 border border-white/20",
   };
 
   return (

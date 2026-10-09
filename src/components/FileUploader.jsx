@@ -81,9 +81,21 @@ export default function FileUploader({ onFilesSelected }) {
             <UploadCloud className="w-8 h-8 text-indigo-400 group-hover:text-indigo-300 transition-colors" />
           </div>
           <h3 className="text-lg font-medium text-white mb-2">Drag & Drop project files</h3>
-          <p className="text-sm text-gray-400 max-w-sm">
+          <p className="text-sm text-gray-400 max-w-sm mb-3">
             Upload sketches, blueprints, or PDF requirements. Our AI will analyze them to configure your project parameters.
           </p>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              const sampleFile = new File(['mock content'], 'sample_cabin_floorplan.jpg', { type: 'image/jpeg' });
+              handleFiles([sampleFile]);
+            }}
+            className="z-30 text-xs text-indigo-400 hover:text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 px-3 py-1.5 rounded-full transition-all"
+          >
+            ⚡ Or click to load demo blueprint
+          </button>
         </div>
       </motion.div>
 
