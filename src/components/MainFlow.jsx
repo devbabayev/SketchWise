@@ -37,6 +37,7 @@ export default function MainFlow() {
   const [hasToken, setHasToken] = useState(true);
   const [purchaseEmail, setPurchaseEmail] = useState('');
   const [purchasePassword, setPurchasePassword] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
   useEffect(() => {
     fetch('/api/admin/token-status')
@@ -46,9 +47,9 @@ export default function MainFlow() {
   }, []);
 
   const handleAnalyze = async () => {
+    setErrorMsg('');
     setIsAnalyzing(true);
     
-    // In a real app we'd append files via FormData
     const formData = new FormData();
     files.forEach(file => formData.append('files', file));
     
@@ -58,17 +59,21 @@ export default function MainFlow() {
         body: formData
       });
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to analyze files');
+      
       setProjectId(data.projectId);
       setTeaser(data.teaser);
       setStep(1); // Move to estimation step
     } catch (err) {
       console.error(err);
+      setErrorMsg(err.message);
     } finally {
       setIsAnalyzing(false);
     }
   };
 
   const handlePurchase = async () => {
+    setErrorMsg('');
     try {
       const res = await fetch('/api/purchase', {
         method: 'POST',
@@ -84,9 +89,12 @@ export default function MainFlow() {
         setUserId(data.userId);
         setFullResult(data.fullResult);
         setStep(2); // Move to final result step
+      } else {
+        throw new Error(data.error || 'Failed to unlock report');
       }
     } catch (err) {
       console.error(err);
+      setErrorMsg(err.message);
     }
   };
 
@@ -122,6 +130,12 @@ export default function MainFlow() {
               </div>
               <FileUploader onFilesSelected={setFiles} />
               
+              {errorMsg && (
+                <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-4 rounded-xl text-sm">
+                  {errorMsg}
+                </div>
+              )}
+
               <MagneticButton 
                 onClick={handleAnalyze}
                 disabled={files.length === 0 || isAnalyzing}
@@ -181,6 +195,13 @@ export default function MainFlow() {
                       className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3.5 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-sm placeholder:text-gray-600"
                     />
                   </div>
+                  
+                  {errorMsg && (
+                    <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-lg text-sm mb-4">
+                      {errorMsg}
+                    </div>
+                  )}
+
                 <MagneticButton
                   onClick={handlePurchase}
                   variant="secondary"
