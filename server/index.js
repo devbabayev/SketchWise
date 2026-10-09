@@ -91,7 +91,7 @@ app.post('/api/analyze-files', upload.array('files'), (req, res) => {
     original,
     optimized,
     savings: original - optimized,
-    blueprintUrl: '/example_blueprint.jpg',
+    blueprintUrl: req.body.processedImage || '/example_blueprint.jpg',
     blueprintName: 'Optimized_Small_Cabin_Floor_Plan_v2.dxf',
     complianceScore: 98.6,
     carbonReductionTons: 14.8,

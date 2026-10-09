@@ -31,12 +31,83 @@ export default function MainFlow() {
   const [errorMsg, setErrorMsg] = useState('');
   const [copiedId, setCopiedId] = useState(false);
 
+  const [processedBlueprint, setProcessedBlueprint] = useState(null);
+
   useEffect(() => {
     fetch('/api/admin/token-status')
       .then(res => res.json())
       .then(data => setHasToken(data.hasToken))
       .catch(() => setHasToken(false));
   }, []);
+
+  const generateAIAugmentation = async (file) => {
+    return new Promise((resolve) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Scale down if massive
+        const MAX_DIM = 1024;
+        let w = img.width;
+        let h = img.height;
+        if (w > MAX_DIM || h > MAX_DIM) {
+          const ratio = Math.min(MAX_DIM / w, MAX_DIM / h);
+          w = w * ratio;
+          h = h * ratio;
+        }
+
+        canvas.width = w;
+        canvas.height = h;
+
+        // Apply a CAD/Blueprint styling filter to the raw sketch
+        ctx.filter = 'grayscale(100%) invert(100%) sepia(100%) hue-rotate(190deg) saturate(300%) contrast(150%) brightness(110%)';
+        ctx.drawImage(img, 0, 0, w, h);
+
+        // Reset filter for overlays
+        ctx.filter = 'none';
+
+        // Draw structural AI grid
+        ctx.strokeStyle = 'rgba(79, 70, 229, 0.3)'; // Indigo grid
+        ctx.lineWidth = Math.max(1, w / 500);
+        const gridSize = Math.max(w, h) / 12;
+        for (let x = 0; x < w; x += gridSize) {
+          ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+        }
+        for (let y = 0; y < h; y += gridSize) {
+          ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+        }
+
+        // Draw AI optimization nodes (e.g. load redistribution points)
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.9)'; // Emerald
+        ctx.shadowColor = 'rgba(16, 185, 129, 0.8)';
+        ctx.shadowBlur = 10;
+        
+        // Pick points along the grid intersections mostly
+        for (let i = 0; i < 15; i++) {
+           const nx = (Math.floor(Math.random() * 11) + 1) * gridSize;
+           const ny = (Math.floor(Math.random() * 11) + 1) * gridSize;
+           if (nx > w || ny > h) continue;
+           
+           ctx.beginPath();
+           ctx.arc(nx, ny, w / 150, 0, Math.PI * 2);
+           ctx.fill();
+           
+           // label
+           ctx.font = `${Math.max(12, w / 60)}px monospace`;
+           ctx.fillStyle = 'white';
+           ctx.shadowBlur = 0;
+           ctx.fillText(`N-${i}`, nx + (w / 100), ny - (w / 100));
+        }
+
+        resolve(canvas.toDataURL('image/jpeg', 0.80));
+        URL.revokeObjectURL(url);
+      };
+      img.onerror = () => resolve(null);
+      img.src = url;
+    });
+  };
 
   const handleAnalyze = async () => {
     setErrorMsg('');
@@ -46,6 +117,14 @@ export default function MainFlow() {
     files.forEach(file => formData.append('files', file));
     
     try {
+      // Create the processed blueprint locally for the demo
+      let augmentedDataUrl = null;
+      if (files.length > 0) {
+        augmentedDataUrl = await generateAIAugmentation(files[0]);
+        setProcessedBlueprint(augmentedDataUrl);
+        formData.append('processedImage', augmentedDataUrl);
+      }
+
       const res = await fetch('/api/analyze-files', {
         method: 'POST',
         body: formData
@@ -408,7 +487,7 @@ export default function MainFlow() {
                   {/* Action Download Buttons */}
                   <div className="flex items-center gap-2">
                     <a
-                      href={fullResult.blueprintUrl || "/example_blueprint.jpg"}
+                      href={processedBlueprint || fullResult.blueprintUrl || "/example_blueprint.jpg"}
                       download="SketchWise_Optimized_Blueprint.jpg"
                       className="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 shadow-[0_0_15px_rgba(79,70,229,0.3)] transition-all active:scale-95"
                     >
@@ -436,7 +515,7 @@ export default function MainFlow() {
                 {/* Blueprint Image Preview Container */}
                 <div className="relative rounded-xl overflow-hidden border border-white/10 bg-black/80 flex items-center justify-center p-2 group">
                   <img
-                    src={fullResult.blueprintUrl || "/example_blueprint.jpg"}
+                    src={processedBlueprint || fullResult.blueprintUrl || "/example_blueprint.jpg"}
                     alt="Suggested Blueprint Plan"
                     className="max-h-[320px] w-auto rounded-lg object-contain transition-transform duration-500 group-hover:scale-[1.02]"
                   />
@@ -531,7 +610,7 @@ export default function MainFlow() {
               {/* Bottom Print / Save CTA */}
               <div className="pt-4 flex flex-col sm:flex-row items-center gap-3">
                 <a
-                  href={fullResult.blueprintUrl || "/example_blueprint.jpg"}
+                  href={processedBlueprint || fullResult.blueprintUrl || "/example_blueprint.jpg"}
                   download="SketchWise_Optimized_Blueprint.jpg"
                   className="w-full sm:flex-1 py-3.5 px-6 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(79,70,229,0.35)] transition-all active:scale-95"
                 >
