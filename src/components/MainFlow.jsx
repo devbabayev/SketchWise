@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Check, DollarSign, Lock, Sparkles, TrendingDown, 
   Download, FileText, Printer, ShieldCheck, Leaf, 
-  Calendar, Copy, RotateCcw, Compass, ArrowRight, Layers
+  Calendar, Copy, RotateCcw, Compass, ArrowRight, Layers, Search
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import FileUploader from './FileUploader.jsx';
@@ -13,6 +13,11 @@ export default function MainFlow() {
   const [step, setStep] = useState(0);
   const [files, setFiles] = useState([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  
+  // Search State
+  const [searchId, setSearchId] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+
   
   // Secure Paywall State
   const [projectId, setProjectId] = useState(null);
@@ -59,7 +64,31 @@ export default function MainFlow() {
     }
   };
 
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (!searchId.trim()) return;
+    setErrorMsg('');
+    setIsSearching(true);
+    try {
+      // Allow user to enter with or without dashes
+      const cleanId = searchId.replace(/-/g, '').trim();
+      const res = await fetch(`/api/project/${cleanId}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Project not found');
+      
+      setUserId(cleanId);
+      setFullResult(data.fullResult);
+      setStep(2);
+    } catch (err) {
+      console.error(err);
+      setErrorMsg(err.message);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
   const handlePurchase = async () => {
+
     setErrorMsg('');
     try {
       const res = await fetch('/api/purchase', {
@@ -156,9 +185,38 @@ export default function MainFlow() {
                   Spatial Structural Engine
                 </div>
                 <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-3">SketchWise</h1>
-                <p className="text-gray-400 text-sm sm:text-base leading-relaxed">
+                <p className="text-gray-400 text-sm sm:text-base leading-relaxed mb-6">
                   Upload architectural floor plans, blueprints, or concept sketches. Our generative AI balances load distributions, extracts geometry, and computes cost-saving material substitutions.
                 </p>
+
+                <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3 items-center w-full max-w-md bg-black/40 border border-white/10 p-2 rounded-2xl focus-within:border-indigo-500/50 transition-colors">
+                  <div className="flex-1 flex items-center gap-2 pl-3">
+                    <Search className="w-4 h-4 text-gray-500" />
+                    <input 
+                      type="text" 
+                      placeholder="Enter 12-digit Project ID" 
+                      value={searchId}
+                      onChange={(e) => setSearchId(e.target.value)}
+                      className="bg-transparent border-none text-sm text-white focus:outline-none w-full placeholder:text-gray-600"
+                    />
+                  </div>
+                  <button 
+                    type="submit" 
+                    disabled={isSearching || !searchId.trim()}
+                    className="w-full sm:w-auto px-5 py-2.5 bg-white/5 hover:bg-white/10 text-gray-300 text-xs font-semibold rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSearching ? 'Finding...' : 'Retrieve Project'}
+                  </button>
+                </form>
+              </div>
+
+              <div className="relative py-2">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-white/10"></div>
+                </div>
+                <div className="relative flex justify-center">
+                  <span className="bg-[#080808] px-4 text-xs text-gray-500 uppercase font-semibold tracking-wider">Or Start New</span>
+                </div>
               </div>
 
               <FileUploader onFilesSelected={setFiles} />
